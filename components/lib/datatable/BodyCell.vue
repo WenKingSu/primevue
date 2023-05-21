@@ -1,58 +1,92 @@
 <template>
-    <td v-if="loading" :style="containerStyle" :class="containerClass" role="cell" v-bind="{ ...getColumnPTOptions(column, 'root'), ...getColumnPTOptions(column, 'bodyCell') }">
-        <component :is="column.children.loading" :data="rowData" :column="column" :field="field" :index="rowIndex" :frozenRow="frozenRow" :loadingOptions="loadingOptions" />
+    <td v-if="loading" :style="containerStyle" :class="containerClass" role="cell"
+        v-bind="{ ...getColumnPTOptions(column, 'root'), ...getColumnPTOptions(column, 'bodyCell') }">
+        <component :is="column.children.loading" :data="rowData" :column="column" :field="field" :index="rowIndex"
+                   :frozenRow="frozenRow" :loadingOptions="loadingOptions"/>
     </td>
-    <td v-else :style="containerStyle" :class="containerClass" @click="onClick" @keydown="onKeyDown" role="cell" v-bind="{ ...getColumnPTOptions(column, 'root'), ...getColumnPTOptions(column, 'bodyCell') }">
-        <span v-if="responsiveLayout === 'stack'" class="p-column-title" v-bind="getColumnPTOptions(column, 'columnTitle')">{{ columnProp('header') }}</span>
-        <component v-if="column.children && column.children.body && !d_editing" :is="column.children.body" :data="rowData" :column="column" :field="field" :index="rowIndex" :frozenRow="frozenRow" :editorInitCallback="editorInitCallback" />
+    <td v-else :style="containerStyle" :class="containerClass" @click="onClick" @keydown="onKeyDown" role="cell"
+        v-bind="{ ...getColumnPTOptions(column, 'root'), ...getColumnPTOptions(column, 'bodyCell') }">
+        <span v-if="responsiveLayout === 'stack'" class="p-column-title"
+              v-bind="getColumnPTOptions(column, 'columnTitle')">{{ columnProp('header') }}</span>
+        <component v-if="column.children && column.children.body && !d_editing" :is="column.children.body"
+                   :data="rowData" :column="column" :field="field" :index="rowIndex" :frozenRow="frozenRow"
+                   :editorInitCallback="editorInitCallback"/>
         <component
-            v-else-if="column.children && column.children.editor && d_editing"
-            :is="column.children.editor"
-            :data="editingRowData"
-            :column="column"
-            :field="field"
-            :index="rowIndex"
-            :frozenRow="frozenRow"
-            :editorSaveCallback="editorSaveCallback"
-            :editorCancelCallback="editorCancelCallback"
-        />
-        <component v-else-if="column.children && column.children.body && !column.children.editor && d_editing" :is="column.children.body" :data="editingRowData" :column="column" :field="field" :index="rowIndex" :frozenRow="frozenRow" />
-        <template v-else-if="columnProp('selectionMode')">
-            <DTRadioButton v-if="columnProp('selectionMode') === 'single'" :value="rowData" :name="name" :checked="selected" @change="toggleRowWithRadio($event, rowIndex)" :column="column" :pt="pt" />
-            <DTCheckbox
-                v-else-if="columnProp('selectionMode') === 'multiple'"
-                :value="rowData"
-                :checked="selected"
-                :rowCheckboxIconTemplate="column.children && column.children.rowcheckboxicon"
-                :aria-selected="selected ? true : undefined"
-                @change="toggleRowWithCheckbox($event, rowIndex)"
+                v-else-if="column.children && column.children.editor && d_editing"
+                :is="column.children.editor"
+                :data="editingRowData"
                 :column="column"
-                :pt="pt"
+                :field="field"
+                :index="rowIndex"
+                :frozenRow="frozenRow"
+                :editorSaveCallback="editorSaveCallback"
+                :editorCancelCallback="editorCancelCallback"
+        />
+        <component v-else-if="column.children && column.children.body && !column.children.editor && d_editing"
+                   :is="column.children.body" :data="editingRowData" :column="column" :field="field" :index="rowIndex"
+                   :frozenRow="frozenRow"/>
+        <template v-else-if="columnProp('selectionMode')">
+            <DTRadioButton
+                    v-if="columnProp('selectionMode') === 'single'"
+                    :value="rowData"
+                    :name="name"
+                    :checked="selected"
+                    @change="toggleRowWithRadio($event, rowIndex)"
+                    :column="column"
+                    :disabled="disabled"
+                    :pt="pt"/>
+            <DTCheckbox
+                    v-else-if="columnProp('selectionMode') === 'multiple'"
+                    :value="rowData"
+                    :checked="selected"
+                    :rowCheckboxIconTemplate="column.children && column.children.rowcheckboxicon"
+                    :aria-selected="selected ? true : undefined"
+                    @change="toggleRowWithCheckbox($event, rowIndex)"
+                    :column="column"
+                    :disabled="disabled"
+                    :pt="pt"
             />
         </template>
         <template v-else-if="columnProp('rowReorder')">
-            <component :is="column.children && column.children.rowreordericon ? column.children.rowreordericon : columnProp('rowReorderIcon') ? 'i' : 'BarsIcon'" :class="['p-datatable-reorderablerow-handle', columnProp('rowReorderIcon')]" />
+            <component
+                    :is="column.children && column.children.rowreordericon ? column.children.rowreordericon : columnProp('rowReorderIcon') ? 'i' : 'BarsIcon'"
+                    :class="['p-datatable-reorderablerow-handle', columnProp('rowReorderIcon')]"/>
         </template>
         <template v-else-if="columnProp('expander')">
-            <button v-ripple class="p-row-toggler p-link" type="button" :aria-expanded="isRowExpanded" :aria-controls="ariaControls" :aria-label="expandButtonAriaLabel" @click="toggleRow" v-bind="getColumnPTOptions(column, 'rowToggler')">
-                <component v-if="column.children && column.children.rowtogglericon" :is="column.children.rowtogglericon" :rowExpanded="isRowExpanded" />
+            <button v-ripple class="p-row-toggler p-link" type="button" :aria-expanded="isRowExpanded"
+                    :aria-controls="ariaControls" :aria-label="expandButtonAriaLabel" @click="toggleRow"
+                    v-bind="getColumnPTOptions(column, 'rowToggler')">
+                <component v-if="column.children && column.children.rowtogglericon" :is="column.children.rowtogglericon"
+                           :rowExpanded="isRowExpanded"/>
                 <template v-else>
-                    <span v-if="isRowExpanded && expandedRowIcon" :class="['p-row-toggler-icon', expandedRowIcon]" />
-                    <ChevronDownIcon v-else-if="isRowExpanded && !expandedRowIcon" class="p-row-toggler-icon" v-bind="getColumnPTOptions(column, 'rowTogglerIcon')" />
-                    <span v-else-if="!isRowExpanded && collapsedRowIcon" :class="['p-row-toggler-icon', collapsedRowIcon]" />
-                    <ChevronRightIcon v-else-if="!isRowExpanded && !collapsedRowIcon" class="p-row-toggler-icon" v-bind="getColumnPTOptions(column, 'rowTogglerIcon')" />
+                    <span v-if="isRowExpanded && expandedRowIcon" :class="['p-row-toggler-icon', expandedRowIcon]"/>
+                    <ChevronDownIcon v-else-if="isRowExpanded && !expandedRowIcon" class="p-row-toggler-icon"
+                                     v-bind="getColumnPTOptions(column, 'rowTogglerIcon')"/>
+                    <span v-else-if="!isRowExpanded && collapsedRowIcon"
+                          :class="['p-row-toggler-icon', collapsedRowIcon]"/>
+                    <ChevronRightIcon v-else-if="!isRowExpanded && !collapsedRowIcon" class="p-row-toggler-icon"
+                                      v-bind="getColumnPTOptions(column, 'rowTogglerIcon')"/>
                 </template>
             </button>
         </template>
         <template v-else-if="editMode === 'row' && columnProp('rowEditor')">
-            <button v-if="!d_editing" v-ripple class="p-row-editor-init p-link" type="button" :aria-label="initButtonAriaLabel" @click="onRowEditInit" v-bind="getColumnPTOptions(column, 'rowEditorInitButton')">
-                <component :is="(column.children && column.children.roweditoriniticon) || 'PencilIcon'" class="p-row-editor-init-icon" v-bind="getColumnPTOptions(column, 'rowEditorInitIcon')" />
+            <button v-if="!d_editing" v-ripple class="p-row-editor-init p-link" type="button"
+                    :aria-label="initButtonAriaLabel" @click="onRowEditInit"
+                    v-bind="getColumnPTOptions(column, 'rowEditorInitButton')">
+                <component :is="(column.children && column.children.roweditoriniticon) || 'PencilIcon'"
+                           class="p-row-editor-init-icon" v-bind="getColumnPTOptions(column, 'rowEditorInitIcon')"/>
             </button>
-            <button v-if="d_editing" v-ripple class="p-row-editor-save p-link" type="button" :aria-label="saveButtonAriaLabel" @click="onRowEditSave" v-bind="getColumnPTOptions(column, 'rowEditorEditButton')">
-                <component :is="(column.children && column.children.roweditorsaveicon) || 'CheckIcon'" class="p-row-editor-save-icon" v-bind="getColumnPTOptions(column, 'rowEditorEditIcon')" />
+            <button v-if="d_editing" v-ripple class="p-row-editor-save p-link" type="button"
+                    :aria-label="saveButtonAriaLabel" @click="onRowEditSave"
+                    v-bind="getColumnPTOptions(column, 'rowEditorEditButton')">
+                <component :is="(column.children && column.children.roweditorsaveicon) || 'CheckIcon'"
+                           class="p-row-editor-save-icon" v-bind="getColumnPTOptions(column, 'rowEditorEditIcon')"/>
             </button>
-            <button v-if="d_editing" v-ripple class="p-row-editor-cancel p-link" type="button" :aria-label="cancelButtonAriaLabel" @click="onRowEditCancel" v-bind="getColumnPTOptions(column, 'rowEditorCancelButton')">
-                <component :is="(column.children && column.children.roweditorcancelicon) || 'TimesIcon'" class="p-row-editor-cancel-icon" v-bind="getColumnPTOptions(column, 'rowEditorCancelIcon')" />
+            <button v-if="d_editing" v-ripple class="p-row-editor-cancel p-link" type="button"
+                    :aria-label="cancelButtonAriaLabel" @click="onRowEditCancel"
+                    v-bind="getColumnPTOptions(column, 'rowEditorCancelButton')">
+                <component :is="(column.children && column.children.roweditorcancelicon) || 'TimesIcon'"
+                           class="p-row-editor-cancel-icon" v-bind="getColumnPTOptions(column, 'rowEditorCancelIcon')"/>
             </button>
         </template>
         <template v-else>{{ resolveFieldData() }}</template>
@@ -69,7 +103,7 @@ import PencilIcon from 'primevue/icons/pencil';
 import TimesIcon from 'primevue/icons/times';
 import OverlayEventBus from 'primevue/overlayeventbus';
 import Ripple from 'primevue/ripple';
-import { DomHandler, ObjectUtils } from 'primevue/utils';
+import {DomHandler, ObjectUtils} from 'primevue/utils';
 import RowCheckbox from './RowCheckbox.vue';
 import RowRadioButton from './RowRadioButton.vue';
 
@@ -103,6 +137,10 @@ export default {
             default: false
         },
         selected: {
+            type: Boolean,
+            default: false
+        },
+        disabled: {
             type: Boolean,
             default: false
         },
@@ -157,7 +195,12 @@ export default {
             this.d_editing = newValue;
         },
         '$data.d_editing': function (newValue) {
-            this.$emit('editing-meta-change', { data: this.rowData, field: this.field || `field_${this.index}`, index: this.rowIndex, editing: newValue });
+            this.$emit('editing-meta-change', {
+                data: this.rowData,
+                field: this.field || `field_${this.index}`,
+                index: this.rowIndex,
+                editing: newValue
+            });
         }
     },
     mounted() {
@@ -210,10 +253,10 @@ export default {
             });
         },
         toggleRowWithRadio(event, index) {
-            this.$emit('radio-change', { originalEvent: event.originalEvent, index: index, data: event.data });
+            this.$emit('radio-change', {originalEvent: event.originalEvent, index: index, data: event.data});
         },
         toggleRowWithCheckbox(event, index) {
-            this.$emit('checkbox-change', { originalEvent: event.originalEvent, index: index, data: event.data });
+            this.$emit('checkbox-change', {originalEvent: event.originalEvent, index: index, data: event.data});
         },
         isEditable() {
             return this.column.children && this.column.children.editor != null;
@@ -251,7 +294,12 @@ export default {
                 if (!this.d_editing) {
                     this.d_editing = true;
                     this.bindDocumentEditListener();
-                    this.$emit('cell-edit-init', { originalEvent: event, data: this.rowData, field: this.field, index: this.rowIndex });
+                    this.$emit('cell-edit-init', {
+                        originalEvent: event,
+                        data: this.rowData,
+                        field: this.field,
+                        index: this.rowIndex
+                    });
 
                     this.overlayEventListener = (e) => {
                         if (this.$el && this.$el.contains(e.target)) {
@@ -294,7 +342,12 @@ export default {
 
                     case 'Escape':
                         this.switchCellToViewMode();
-                        this.$emit('cell-edit-cancel', { originalEvent: event, data: this.rowData, field: this.field, index: this.rowIndex });
+                        this.$emit('cell-edit-cancel', {
+                            originalEvent: event,
+                            data: this.rowData,
+                            field: this.field,
+                            index: this.rowIndex
+                        });
                         break;
 
                     case 'Tab':
@@ -380,30 +433,71 @@ export default {
             return DomHandler.find(this.$el, '.p-invalid').length === 0;
         },
         onRowEditInit(event) {
-            this.$emit('row-edit-init', { originalEvent: event, data: this.rowData, newData: this.editingRowData, field: this.field, index: this.rowIndex });
+            this.$emit('row-edit-init', {
+                originalEvent: event,
+                data: this.rowData,
+                newData: this.editingRowData,
+                field: this.field,
+                index: this.rowIndex
+            });
         },
         onRowEditSave(event) {
-            this.$emit('row-edit-save', { originalEvent: event, data: this.rowData, newData: this.editingRowData, field: this.field, index: this.rowIndex });
+            this.$emit('row-edit-save', {
+                originalEvent: event,
+                data: this.rowData,
+                newData: this.editingRowData,
+                field: this.field,
+                index: this.rowIndex
+            });
         },
         onRowEditCancel(event) {
-            this.$emit('row-edit-cancel', { originalEvent: event, data: this.rowData, newData: this.editingRowData, field: this.field, index: this.rowIndex });
+            this.$emit('row-edit-cancel', {
+                originalEvent: event,
+                data: this.rowData,
+                newData: this.editingRowData,
+                field: this.field,
+                index: this.rowIndex
+            });
         },
         editorInitCallback(event) {
-            this.$emit('row-edit-init', { originalEvent: event, data: this.rowData, newData: this.editingRowData, field: this.field, index: this.rowIndex });
+            this.$emit('row-edit-init', {
+                originalEvent: event,
+                data: this.rowData,
+                newData: this.editingRowData,
+                field: this.field,
+                index: this.rowIndex
+            });
         },
         editorSaveCallback(event) {
             if (this.editMode === 'row') {
-                this.$emit('row-edit-save', { originalEvent: event, data: this.rowData, newData: this.editingRowData, field: this.field, index: this.rowIndex });
+                this.$emit('row-edit-save', {
+                    originalEvent: event,
+                    data: this.rowData,
+                    newData: this.editingRowData,
+                    field: this.field,
+                    index: this.rowIndex
+                });
             } else {
                 this.completeEdit(event, 'enter');
             }
         },
         editorCancelCallback(event) {
             if (this.editMode === 'row') {
-                this.$emit('row-edit-cancel', { originalEvent: event, data: this.rowData, newData: this.editingRowData, field: this.field, index: this.rowIndex });
+                this.$emit('row-edit-cancel', {
+                    originalEvent: event,
+                    data: this.rowData,
+                    newData: this.editingRowData,
+                    field: this.field,
+                    index: this.rowIndex
+                });
             } else {
                 this.switchCellToViewMode();
-                this.$emit('cell-edit-cancel', { originalEvent: event, data: this.rowData, field: this.field, index: this.rowIndex });
+                this.$emit('cell-edit-cancel', {
+                    originalEvent: event,
+                    data: this.rowData,
+                    field: this.field,
+                    index: this.rowIndex
+                });
             }
         },
         updateStickyPosition() {

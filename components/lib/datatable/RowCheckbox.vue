@@ -1,22 +1,40 @@
 <template>
-    <div :class="['p-checkbox p-component', { 'p-checkbox-focused': focused }]" @click="onClick" v-bind="getColumnPTOptions('checkboxWrapper')">
-        <div class="p-hidden-accessible" v-bind="getColumnPTOptions('hiddenInputWrapper')">
+    <div :class="['p-checkbox p-component', { 'p-checkbox-focused': focused }]"
+         @click="onClick"
+         v-bind="getColumnPTOptions('checkboxWrapper')"
+    >
+        <div class="p-hidden-accessible"
+             v-bind="getColumnPTOptions('hiddenInputWrapper')">
             <input
-                ref="input"
-                type="checkbox"
-                :checked="checked"
-                :disabled="$attrs.disabled"
-                :tabindex="$attrs.disabled ? null : '0'"
-                :aria-label="checkboxAriaLabel"
-                @focus="onFocus($event)"
-                @blur="onBlur($event)"
-                @keydown="onKeydown"
-                v-bind="getColumnPTOptions('hiddenInput')"
+                    ref="input"
+                    type="checkbox"
+                    :checked="checked"
+                    :disabled="$attrs.disabled"
+                    :tabindex="$attrs.disabled ? null : '0'"
+                    :aria-label="checkboxAriaLabel"
+                    @focus="onFocus($event)"
+                    @blur="onBlur($event)"
+                    @keydown="onKeydown"
+                    v-bind="getColumnPTOptions('hiddenInput')"
             />
         </div>
-        <div ref="box" :class="['p-checkbox-box p-component', { 'p-highlight': checked, 'p-disabled': $attrs.disabled, 'p-focus': focused }]" v-bind="getColumnPTOptions('checkbox')">
-            <component v-if="rowCheckboxIconTemplate" :is="rowCheckboxIconTemplate" :checked="checked" class="p-checkbox-icon" />
-            <CheckIcon v-else class="p-checkbox-icon" v-bind="getColumnPTOptions('checkboxIcon')" />
+
+        <div ref="box"
+             :class="[
+                 'p-checkbox-box p-component',
+                  {
+                      'p-highlight': checked,
+                      'p-disabled': $attrs.disabled,
+                      'p-focus': focused
+                  }
+             ]"
+             v-bind="getColumnPTOptions('checkbox')"
+        >
+            <component v-if="rowCheckboxIconTemplate"
+                       :is="rowCheckboxIconTemplate"
+                       :checked="checked"
+                       class="p-checkbox-icon"/>
+            <CheckIcon v-else class="p-checkbox-icon" v-bind="getColumnPTOptions('checkboxIcon')"/>
         </div>
     </div>
 </template>
@@ -24,7 +42,7 @@
 <script>
 import BaseComponent from 'primevue/basecomponent';
 import CheckIcon from 'primevue/icons/check';
-import { DomHandler } from 'primevue/utils';
+import {DomHandler} from 'primevue/utils';
 
 export default {
     name: 'RowCheckbox',
