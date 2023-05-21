@@ -64,6 +64,7 @@
                             :index="i"
                             :selected="isSelected(rowData)"
                             :disabled="isDisabled(rowData)"
+                            :hiddenDisabled="isHiddenDisabled(rowData)"
                             :frozenRow="frozenRow"
                             :rowspan="rowGroupMode === 'rowspan' ? calculateRowGroupSize(value, col, getRowIndex(index)) : null"
                             :editMode="editMode"
@@ -490,6 +491,13 @@ export default {
         isDisabled(rowData) {
             if (rowData) {
                 return rowData.disabled ? rowData.disabled : false;
+            }
+
+            return false;
+        },
+        isHiddenDisabled(rowData) {
+            if (rowData) {
+                return rowData.hiddenDisabled ? rowData.hiddenDisabled : false;
             }
 
             return false;

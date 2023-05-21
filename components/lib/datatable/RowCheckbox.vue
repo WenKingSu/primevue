@@ -25,6 +25,7 @@
                   {
                       'p-highlight': checked,
                       'p-disabled': $attrs.disabled,
+                      'hidden': $attrs.hiddenDisable && $attrs.disabled,
                       'p-focus': focused
                   }
              ]"

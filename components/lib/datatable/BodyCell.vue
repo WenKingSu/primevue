@@ -34,6 +34,7 @@
                     @change="toggleRowWithRadio($event, rowIndex)"
                     :column="column"
                     :disabled="disabled"
+                    :hiddenDisable="hiddenDisabled"
                     :pt="pt"/>
             <DTCheckbox
                     v-else-if="columnProp('selectionMode') === 'multiple'"
@@ -44,6 +45,7 @@
                     @change="toggleRowWithCheckbox($event, rowIndex)"
                     :column="column"
                     :disabled="disabled"
+                    :hiddenDisable="hiddenDisabled"
                     :pt="pt"
             />
         </template>
@@ -141,6 +143,10 @@ export default {
             default: false
         },
         disabled: {
+            type: Boolean,
+            default: false
+        },
+        hiddenDisabled: {
             type: Boolean,
             default: false
         },
