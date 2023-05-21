@@ -1,9 +1,19 @@
 <template>
-    <div :class="['p-radiobutton p-component', { 'p-radiobutton-focused': focused }]" @click="onClick" v-bind="getColumnPTOptions('radiobuttonWrapper')">
-        <div class="p-hidden-accessible" v-bind="ptm('hiddenInputWrapper')">
-            <input ref="input" type="radio" :checked="checked" :disabled="$attrs.disabled" :name="name" tabindex="0" @focus="onFocus($event)" @blur="onBlur($event)" @keydown.space.prevent="onClick" v-bind="getColumnPTOptions('hiddenInput')" />
+    <div :class="['p-radiobutton p-component', { 'p-radiobutton-focused': focused }]" @click="onClick"
+         v-bind="getColumnPTOptions('radiobuttonWrapper')">
+        <div class="p-hidden-accessible" v-bind="getColumnPTOptions('hiddenInputWrapper')">
+            <input ref="input" type="radio" :checked="checked" :disabled="$attrs.disabled" :name="name" tabindex="0"
+                   @focus="onFocus($event)" @blur="onBlur($event)" @keydown.space.prevent="onClick"
+                   v-bind="getColumnPTOptions('hiddenInput')"/>
         </div>
-        <div ref="box" :class="['p-radiobutton-box p-component', { 'p-highlight': checked, 'p-disabled': $attrs.disabled, 'p-focus': focused }]" v-bind="getColumnPTOptions('radiobutton')">
+        <div ref="box"
+             :class="['p-radiobutton-box p-component',  {
+                  'p-highlight': checked,
+                  'p-disabled': $attrs.disabled,
+                  'hidden': $attrs.hiddenDisable && $attrs.disabled,
+                  'p-focus': focused
+             }]"
+             v-bind="getColumnPTOptions('radiobutton')">
             <div class="p-radiobutton-icon" v-bind="getColumnPTOptions('radiobuttonIcon')"></div>
         </div>
     </div>
@@ -11,7 +21,7 @@
 
 <script>
 import BaseComponent from 'primevue/basecomponent';
-import { DomHandler } from 'primevue/utils';
+import {DomHandler} from 'primevue/utils';
 
 export default {
     name: 'RowRadioButton',
